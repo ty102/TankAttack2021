@@ -3,26 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using TMPro;
+using UnityEngine.UI;
+
 public class PhotonManager : MonoBehaviourPunCallbacks 
 {
     private readonly string gameVersion = "v1.0";
-    private string UserId = "MH";
+    private string userId = "MH";
+
+    public TMP_InputField userIdText;
+    public TMP_InputField roomNameText;
+
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        PhotonNetwork.AutomaticallySyncScene = true; // 자동으로 씬 로딩해주는 기능. 트루일때 로드레벨 사용가능. 방장만 방 받으면 다 공유
         //게임 버전 지정
         PhotonNetwork.GameVersion = gameVersion;
         //유저명 지정
-        PhotonNetwork.NickName = UserId;
+        //PhotonNetwork.NickName = userId;
         //서버접속
         PhotonNetwork.ConnectUsingSettings();
+    }
+
+    void Start()
+    {
+        userId = PlayerPrefs.GetString("USER_ID", $"USER_{Random.Range(0, 100):00}");
+        userIdText.text = userId;
+        PhotonNetwork.NickName = userId;
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Server!!!");
-        PhotonNetwork.JoinRandomRoom(); //랜덤한 룸에 접속시도
+        //PhotonNetwork.JoinRandomRoom(); //랜덤한 룸에 접속시도
+
+        //로비에 접속
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        Debug.Log("Joined Lobby!!");
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -49,10 +72,28 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log("방 입장 완료");
         Debug.Log(PhotonNetwork.CurrentRoom.Name);
 
-        // 통신이 가능한 ㅏ주인공 캐릭터(탱크) 생성
-        PhotonNetwork.Instantiate("Tank", new Vector3(0, 5.0f, 0), Quaternion.identity, 0); //룸에 입장한 모든 사람의 맵에 탱크 만들어진다.
+        if(PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("BattleField"); //이 함수를 쓰면 통신을 잠시 끊고 새 씬을 연결하고 다시 연결 재개
+        }
+
+        // 통신이 가능한 주인공 캐릭터(탱크) 생성
+        //PhotonNetwork.Instantiate("Tank", new Vector3(0, 5.0f, 0), Quaternion.identity, 0); //룸에 입장한 모든 사람의 맵에 탱크 만들어진다.
         // 0 은 그룹 아이디, 같은 그룹 아이디끼리만 보인다.
 
+    }
+
+    public void OnLoginClick()
+    {
+        if (string.IsNullOrEmpty(userIdText.text))
+        {
+            userId = $"USER_{Random.Range(0, 100):00}";
+            userIdText.text = userId;
+        }
+
+        PlayerPrefs.SetString("USER_ID", userIdText.text);
+        PhotonNetwork.NickName = userIdText.text;
+        PhotonNetwork.JoinRandomRoom();
     }
 
 }
