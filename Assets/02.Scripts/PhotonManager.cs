@@ -28,8 +28,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.Log($"code = {returnCode}, msg = {message}");
+
+        //룸 속성을 설정
+        RoomOptions ro = new RoomOptions();
+        ro.IsOpen = true;
+        ro.IsVisible = true;
+        ro.MaxPlayers = 30;
+
         //룸을 생성
-        PhotonNetwork.CreateRoom("My Room");
+        PhotonNetwork.CreateRoom("My Room", ro);
     }
     // 룸 생성 완료 콜백
     public override void OnCreatedRoom()
@@ -41,11 +48,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("방 입장 완료");
         Debug.Log(PhotonNetwork.CurrentRoom.Name);
+
+        // 통신이 가능한 ㅏ주인공 캐릭터(탱크) 생성
+        PhotonNetwork.Instantiate("Tank", new Vector3(0, 5.0f, 0), Quaternion.identity, 0); //룸에 입장한 모든 사람의 맵에 탱크 만들어진다.
+        // 0 은 그룹 아이디, 같은 그룹 아이디끼리만 보인다.
+
     }
-
-
-
-  
-
 
 }
