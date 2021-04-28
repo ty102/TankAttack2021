@@ -20,12 +20,17 @@ public class TankCtrl : MonoBehaviour
     public AudioClip fireSfx;
     private new AudioSource audio;
 
+    public TMPro.TMP_Text userIdText;
+
     
     void Start()
     {
         tr = GetComponent<Transform>();
         pv = GetComponent<PhotonView>();
         audio = GetComponent<AudioSource>();
+
+
+        userIdText.text = pv.Owner.NickName;
 
         if (pv.IsMine)
         {
@@ -54,7 +59,7 @@ public class TankCtrl : MonoBehaviour
             //포탄 발사 로직
             if (Input.GetMouseButtonDown(0))
             {
-               pv.RPC("Fire", RpcTarget.All, null); //상대방의 총알이 보이게
+               pv.RPC("Fire", RpcTarget.All,pv.Owner.NickName); //상대방의 총알이 보이게
                //RpcTarget.AllViaServer : 서버에서 동시에 뿌려주는. 그냥 All은 로컬은 바로 실행, AllBuffered(쌓아둠)
                //Fire();
             }
@@ -67,11 +72,10 @@ public class TankCtrl : MonoBehaviour
 
     [PunRPC]//이게 없으면 일반함수
     
-    void Fire()
+    void Fire(string shooterName)
     {
         audio?.PlayOneShot(fireSfx);
-        Instantiate(cannon, firePos.position, firePos.rotation);
-
-
+        GameObject _cannon =  Instantiate(cannon, firePos.position, firePos.rotation);
+        _cannon.GetComponent<Cannon>().shooter = shooterName;
     }
 }

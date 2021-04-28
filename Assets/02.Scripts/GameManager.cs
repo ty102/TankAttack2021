@@ -15,8 +15,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     public TMP_Text messageText;
     public Button exitButton;
 
+    public static GameManager instance = null; //싱글턴변수
+
     void Awake()
     {
+        instance = this;
+
         //PhotonNetwork.IsMessageQueueRunning = true;
 
         Vector3 pos = new Vector3(Random.Range(-150.0f, 150.0f), 5.0f, Random.Range(-150.0f, 150.0f));

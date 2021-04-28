@@ -59,8 +59,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         ro.IsVisible = true;
         ro.MaxPlayers = 30;
 
+        roomNameText.text = $"ROOM _{Random.Range(0, 100):000}";
+
         //룸을 생성
-        PhotonNetwork.CreateRoom("My Room", ro);
+        PhotonNetwork.CreateRoom(roomNameText.text, ro);
     }
     // 룸 생성 완료 콜백
     public override void OnCreatedRoom()
