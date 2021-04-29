@@ -14,6 +14,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public TMP_InputField userIdText;
     public TMP_InputField roomNameText;
 
+    //룸 목록 저장하기 위한 딕셔너리자료형
+    private Dictionary<string, GameObject> roomDict = new Dictionary<string, GameObject>();
+    //룸을 표시할 프리팹
+    public GameObject roomPrefab;
+    // room 프리팹이 차일드화시킬 부모 객체
+    public Transform scrollContent;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -57,7 +64,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         RoomOptions ro = new RoomOptions();
         ro.IsOpen = true;
         ro.IsVisible = true;
-        ro.MaxPlayers = 30;
+        ro.MaxPlayers = 30;        
 
         roomNameText.text = $"ROOM _{Random.Range(0, 100):000}";
 
@@ -90,11 +97,47 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     // 룸 목록이 변경(갱신) 될 때마다 호출되는 콜백함수
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
+        GameObject tempRoom = null; //함수 안의 지역변수이기때문에 반드시 초기화가 필요하다.
+
         foreach (var room in roomList)
         {
-            Debug.Log($"room name= {room.Name}, ({room.PlayerCount}/{room.MaxPlayers})");
+            //Debug.Log($"room name= {room.Name}, ({room.PlayerCount}/{room.MaxPlayers})"); : 처음에 썼던 플레이어 카운트
+            // 룸 삭제된 경우
+            if (room.RemovedFromList == true)
+            {
+                //딕셔너리에 삭제, roomItem 프리팹 삭제
+                roomDict.TryGetValue(room.Name, out tempRoom);
+                //RoomItem 프리팹을 삭제
+                Destroy(tempRoom);
+                //딕셔너리에서 해당 데이터를 삭제
+                roomDict.Remove(room.Name);
+            }
+            else //룸 정보가 갱신(변경)
+            {
+                //처음 생성된 경우 딕셔너리에 데이터 추가 + roomItem 생성
+                if (roomDict.ContainsKey(room.Name) == false)
+                {
+                    GameObject _room = Instantiate(roomPrefab, scrollContent); //그리드 레이아웃 그룹을 넣었기 때문에 위치는 필요없다.
+                    //룸 정보 표시
+                    _room.GetComponent<RoomData>().RoomInfo = room; //룸 데이터의 Set부분 발생
+                    //_room.GetComponentInChildren<TMP_Text>().text = room.Name; // 먼저했던거
+                    //딕셔너리에 데이터 추가
+                    roomDict.Add(room.Name, _room);
+                }
+                else
+                {
+                    //룸 정보를 갱신
+                    roomDict.TryGetValue(room.Name, out tempRoom);
+                    //tempRoom.GetComponentInChildren<TMP_Text>().text = room.Name; //먼저헀던거
+                    tempRoom.GetComponent<RoomData>().RoomInfo = room;
+
+                }
+
+            }
         }
     }
+
+    
     
 #region UI_BUTTON_CALLBACK
     public void OnLoginClick()
