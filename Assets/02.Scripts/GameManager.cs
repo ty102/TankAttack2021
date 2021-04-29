@@ -7,13 +7,22 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+
 public class GameManager : MonoBehaviourPunCallbacks
 {
-
+    [Header("Room Info")]
     public TMP_Text roomNameText;
     public TMP_Text connectInfoText;
     public TMP_Text messageText;
+
+    [Header("Chatting UI")]
+    public TMP_Text chatListText;
+    public TMP_InputField msgIF;
+
     public Button exitButton;
+
+    private PhotonView pv;
+
 
     public static GameManager instance = null; //싱글턴변수
 
@@ -31,6 +40,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        pv = GetComponent<PhotonView>();
         SetRoomInfo();
     }
 
@@ -65,5 +75,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         SetRoomInfo();
         string msg = $"\n<color=#ff0000>{otherPlayer.NickName}</color> is left room";
         messageText.text += msg;
+    }
+
+    public void OnSendClick() //버튼클릭시호출할함수
+    {
+        string _msg = $"<color=#00ff00>[{PhotonNetwork.NickName}]</color>{msgIF.text}";
+        pv.RPC("SendChatMessage", RpcTarget.AllBufferedViaServer, _msg); //allbufferedviaserver 자기자신은 물론 나중에 입장한 사람도 메시지 볼 수 있게.
+    }
+
+    [PunRPC]
+    void SendChatMessage(string msg)
+    {
+        chatListText.text += $"{msg}\n";
     }
 }
