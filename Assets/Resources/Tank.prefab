@@ -988,7 +988,6 @@ GameObject:
   - component: {fileID: 2956128204352422013}
   - component: {fileID: 2956128204352422014}
   - component: {fileID: 2956128204352421952}
-  - component: {fileID: 2956128204352421953}
   - component: {fileID: 2956128204352421954}
   - component: {fileID: 2177012440004083806}
   - component: {fileID: 7948178870377854850}
@@ -1069,22 +1068,6 @@ MonoBehaviour:
   cannonMesh: {fileID: 2956128204512363306}
   fireSfx: {fileID: 8300000, guid: c59b70e4dec5147a487fd2b4d5acbfc2, type: 3}
   userIdText: {fileID: 162294836}
---- !u!114 &2956128204352421953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2956128204512730904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &2956128204352421954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1104,8 +1087,8 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 2956128204352421953}
-  sceneViewId: 1
+  - {fileID: 2956128204352421952}
+  sceneViewId: 2
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &2177012440004083806
